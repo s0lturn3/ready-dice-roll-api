@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 @Injectable()
 export class UsuarioService {
 
-  async login() {
+  async login(): Promise<{ data: any; error: any; }> {
     const supabaseUrl = "https://thhtwppvxkfikpejcojk.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHR3cHB2eGtmaWtwZWpjb2prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNjIwNzQsImV4cCI6MjA1NTkzODA3NH0.odFRt3IovEGzIRf_jpPFdTqd_8su80E3HcJ0nD1gANs";
 
@@ -15,11 +15,9 @@ export class UsuarioService {
       }
     });
     
-    const { data: Usuario, error } = await supabase
+    return await supabase
       .from('Usuario')
-      .select('*')
-
-    console.log(Usuario);
+      .select('*');
   }
 
 }

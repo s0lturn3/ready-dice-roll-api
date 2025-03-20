@@ -4,7 +4,9 @@ import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    snapshot: true
+  });
 
   // Aplica nosso interceptor para padronizar a estrutura de retorno
   app.useGlobalInterceptors(new ResponseInterceptor());
