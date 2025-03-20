@@ -24,6 +24,7 @@
     "@nestjs/core": "^11.0.12",
     "@nestjs/platform-express": "^11.0.12",
     "@nestjs/swagger": "^11.0.7",
+    "@supabase/supabase-js": "^2.49.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1"
