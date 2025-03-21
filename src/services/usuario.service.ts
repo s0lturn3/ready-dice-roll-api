@@ -1,23 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { createClient } from '@supabase/supabase-js';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+
+import { UsuarioDbModel } from 'src/db/usuario.db';
+import { IUserLogin } from 'src/models/auth/iuser-login.model';
 
 
 @Injectable()
 export class UsuarioService {
+  constructor( private readonly _usuarioDb: UsuarioDbModel ) { }
 
-  async login(): Promise<{ data: any; error: any; }> {
-    const supabaseUrl = "https://thhtwppvxkfikpejcojk.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHR3cHB2eGtmaWtwZWpjb2prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNjIwNzQsImV4cCI6MjA1NTkzODA3NH0.odFRt3IovEGzIRf_jpPFdTqd_8su80E3HcJ0nD1gANs";
-
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        persistSession: false
-      }
-    });
+  public async login(loginData?: IUserLogin): Promise<any> {
+    const supabase = this._usuarioDb.createSupabaseClient();
     
-    return await supabase
+    const { data, error } = await supabase
       .from('Usuario')
-      .select('*');
+      .select('Id, Username, Email')
+      .or(`Email.eq.${loginData.usernameOrEmail}, Username.eq.${loginData.usernameOrEmail}`)
+
+    console.log(data);
+    console.log(error);
+
+    if (error) {
+      throw new InternalServerErrorException("Ocorreu um erro ao realizar login: " + error.message);
+    }
+    
+    return data;
   }
 
 }

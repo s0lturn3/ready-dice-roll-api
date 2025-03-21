@@ -16,7 +16,6 @@ async function bootstrap() {
     .setTitle('Ready Dice Roll!')
     .setDescription('APIs utilizadas no projeto Ready, Dice, Roll!')
     .setVersion('1.0')
-    .addTag('ReadyDiceRoll')
     .build();
 
   app.use((req, res, next) => {

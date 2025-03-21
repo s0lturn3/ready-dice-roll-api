@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 import { UsuarioController } from './controllers/usuario.controller';
 import { UsuarioService } from './services/usuario.service';
 import { UploadController } from './controllers/upload.controller';
 import { UploadService } from './services/upload.service';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { UsuarioDbModel } from './db/usuario.db';
 
 
 @Module({
@@ -18,7 +16,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
       http: process.env.NODE_ENV !== 'production',
     }),
   ],
-  controllers: [ AppController, UsuarioController, UploadController ],
-  providers: [ AppService, UsuarioService, UploadService ],
+  controllers: [ UsuarioController, UploadController ],
+  providers: [ UsuarioService, UploadService, UsuarioDbModel ],
 })
 export class AppModule {}
