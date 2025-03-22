@@ -17,7 +17,7 @@ export class ResponseInterceptor implements NestInterceptor {
       })),
       catchError((err) => {
         let status = HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = 'Ocorreu um erro interno no servidor. Tente novamente mais tarde ou tenta o contato direto pelo email.';
+        let message = 'Ocorreu um erro interno no servidor. Tente novamente mais tarde ou tente o contato direto pelo email.';
 
         if (err instanceof HttpException) {
           status = err.getStatus();
