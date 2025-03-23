@@ -33,7 +33,7 @@ export class AuthService {
    }
 
 
-   public async signIn(loginData: IUserLogin): Promise<{ access_token: string, userId: string }> {
+   public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string }> {
       const supabase = this._usuarioDb.createSupabaseClient();
       let responseModel = { access_token: "", userId: "" };
       

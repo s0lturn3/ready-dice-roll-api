@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { UsuarioModule } from './usuario.module';
-import { AuthService } from 'src/services/auth.service';
-import { AuthController } from 'src/controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+
 import { jwtConstants } from 'src/models/constants/constants';
-import { DbConnectionService } from 'src/db/db-connection.service';
+
+import { AuthController } from 'src/controllers/auth.controller';
+import { AuthService } from 'src/services/auth.service';
+
+import { UsuarioModule } from './usuario.module';
 import { UsuarioService } from 'src/services/usuario.service';
+import { DbConnectionService } from 'src/db/db-connection.service';
 
 @Module({
    imports: [
@@ -13,10 +16,14 @@ import { UsuarioService } from 'src/services/usuario.service';
       JwtModule.register({
          global: true,
          secret: jwtConstants.secret,
-         signOptions: { expiresIn: '60s' },
+         signOptions: { expiresIn: '10s' },
       }),
    ],
-   providers: [ AuthService, DbConnectionService, UsuarioService ],
+   providers: [
+      AuthService,
+      DbConnectionService,
+      UsuarioService,
+   ],
    controllers: [ AuthController ],
 })
 export class AuthModule { }

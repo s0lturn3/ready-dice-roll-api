@@ -19,7 +19,7 @@ export class UsuarioService {
 
     const supabase = this._dbConnectionService.createSupabaseClient();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('Usuario')
       .update({ DtUltimoLogin: new Date() })
       .eq('Id', userId)
@@ -55,8 +55,8 @@ export class UsuarioService {
     try {
       const payload = { sub: data[0].Id, username: data[0].Username };
       return {
-          access_token: await this._jwtService.signAsync(payload),
-          userId: data[0].Id
+        access_token: await this._jwtService.signAsync(payload),
+        userId: data[0].Id
       };
     }
     catch (error) {
@@ -72,7 +72,7 @@ export class UsuarioService {
 
     const supabase = this._dbConnectionService.createSupabaseClient();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('Usuario')
       .update({ Senha: newPassword })
       .eq('Id', userId)
