@@ -16,7 +16,7 @@ import { DbConnectionService } from 'src/db/db-connection.service';
       JwtModule.register({
          global: true,
          secret: jwtConstants.secret,
-         signOptions: { expiresIn: '10s' },
+         signOptions: { expiresIn: '60s' },
       }),
    ],
    providers: [
