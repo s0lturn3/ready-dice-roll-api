@@ -31,7 +31,7 @@ export class UsuarioService {
   }
 
 
-  public async createUsuario(usuario: UsuarioDtoRecord): Promise<{ access_token: string, userId: string }> {
+  public async createUsuario(usuario: UsuarioDtoRecord): Promise<{ access_token: string, userId: string, userName: string }> {
     const supabase = this._dbConnectionService.createSupabaseClient();
     usuario.Id = uuidv4();
 
@@ -56,7 +56,8 @@ export class UsuarioService {
       const payload = { sub: data[0].Id, username: data[0].Username };
       return {
         access_token: await this._jwtService.signAsync(payload),
-        userId: data[0].Id
+        userId: data[0].Id,
+        userName: data[0].Username
       };
     }
     catch (error) {

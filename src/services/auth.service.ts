@@ -33,9 +33,9 @@ export class AuthService {
    }
 
 
-   public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string }> {
+   public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string, userName: string }> {
       const supabase = this._usuarioDb.createSupabaseClient();
-      let responseModel = { access_token: "", userId: "" };
+      let responseModel = { access_token: "", userId: "", userName: "" };
       
       const { data, error } = await supabase
          .from('Usuario')
@@ -55,7 +55,8 @@ export class AuthService {
       try {
          responseModel = {
             access_token: await this._jwtService.signAsync(payload),
-            userId: data[0].Id
+            userId: data[0].Id,
+            userName: data[0].Username
          };
       }
       catch (error) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 
@@ -38,32 +38,22 @@ export class AuthController {
       return { name: "abc", message: "bca", expiredAt: "cab" };
    }
 
-   
-   @HttpCode(HttpStatus.OK)
-   @ApiOperation({ summary: 'Verifica se o usuário já está cadastrado no sistema.' })
-   @ApiResponse({ status: 200, description: 'Verificação feita com sucesso.' })
-   @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
-   @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao buscar o usuário.' })
-   @Get('validateUsernameEmail')
-   public async validateUsernameEmail(@Query('usernameOrEmail') usernameOrEmail: string): Promise<{ newUser: boolean }> {
-      return this._authService.validateUsernameEmail(usernameOrEmail);
-   }
-
    // #endregion GET
 
    // #region POST
 
+   @HttpCode(HttpStatus.OK)
    @ApiOperation({ summary: 'Valida o login do usuário' })
    @ApiResponse({ status: 200, description: 'Usuário logado.', type: IUserLogin })
    @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
    @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao buscar o usuário.' })
    @Post('login')
-   public async login(@Body() loginData: IUserLogin): Promise<{ access_token: string, userId: string }> {
+   public async login(@Body() loginData: IUserLogin): Promise<{ access_token: string, userId: string, userName: string }> {
       this.validateLoginParams(loginData);
 
-      const { access_token, userId } = await this._authService.login(loginData);
+      const { access_token, userId, userName } = await this._authService.login(loginData);
 
-      return { access_token, userId };
+      return { access_token, userId, userName };
    }
    
    
@@ -72,10 +62,10 @@ export class AuthController {
    @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
    @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao criar o usuário.' })
    @Post('signIn')
-   public async signIn(@Body() createUsuarioData: UsuarioDtoRecord): Promise<{ access_token: string, userId: string }> {
-      const { access_token, userId } = await this._usuarioService.createUsuario(createUsuarioData);
+   public async signIn(@Body() createUsuarioData: UsuarioDtoRecord): Promise<{ access_token: string, userId: string, userName: string }> {
+      const { access_token, userId, userName } = await this._usuarioService.createUsuario(createUsuarioData);
 
-      return { access_token, userId };
+      return { access_token, userId, userName };
    }
 
    // #endregion POST

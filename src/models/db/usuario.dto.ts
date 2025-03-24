@@ -39,4 +39,8 @@ export class UsuarioDtoRecord {
    @ApiProperty()
    @IsString()
    MicrosoftId: string;
+
+   @ApiProperty()
+   @IsString()
+   Imagem?: string;
 }

@@ -11,7 +11,6 @@ import { AuthModule } from './modules/auth.module';
 
 import { DbConnectionService } from './db/db-connection.service';
 
-
 @Module({
   imports: [
     AuthModule,
