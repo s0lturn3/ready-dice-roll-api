@@ -2,7 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsEmail, IsString, MinLength } from "class-validator";
 
 export class UsuarioDtoRecord {
-
    @ApiProperty()
    @IsString()
    Id: string;
