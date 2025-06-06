@@ -43,7 +43,7 @@ export class AuthController {
    // #region POST
 
    @HttpCode(HttpStatus.OK)
-   @ApiOperation({ summary: 'Valida o login do usuário' })
+   @ApiOperation({ summary: 'Valida o login do usuário.' })
    @ApiResponse({ status: 200, description: 'Usuário logado.', type: IUserLogin })
    @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
    @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao buscar o usuário.' })

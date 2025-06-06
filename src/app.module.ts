@@ -21,7 +21,9 @@ import { CampanhaService } from './services/campanha.service';
     AuthModule,
     CampanhaModule,
 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
     }),
