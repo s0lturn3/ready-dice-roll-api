@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { CampanhaDto } from 'src/models/db/campanha.dto';
 import { CampanhaService } from 'src/services/campanha.service';
 
-@ApiTags('Campanha')
-@Controller('campanha')
+@ApiTags('Campanhas')
+@Controller('campanhas')
 export class CampanhaController {
 
   // #region ==========> PROPERTIES <==========
@@ -27,22 +27,22 @@ export class CampanhaController {
 
 
   // #region GET
-  
-  @UseGuards(AuthGuard)
-  @Get('jwttest')
-  public async jwttest(): Promise<{ name: string, message: string, expiredAt: string }> {
-    return { name: "abc", message: "bca", expiredAt: "cab" };
-  }
 
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Busca a lista de campanhas cadastradas pelo usuário ou que ele tenha acesso.' })
+  @Get('list')
+  public async list(): Promise<any> {
+    return this._campanhaService.getList();;
+  }
   // #endregion GET
 
   // #region POST
   
-  @UseGuards(AuthGuard)
-  @Post('create')
-  public async create(@Body() createCampanhaData: CampanhaDto): Promise<void> {
-    await this._campanhaService.create(createCampanhaData);
-  }
+  // @UseGuards(AuthGuard)
+  // @Post('create')
+  // public async create(@Body() createCampanhaData: CampanhaDto): Promise<void> {
+  //   await this._campanhaService.create(createCampanhaData);
+  // }
 
   // #endregion POST
 

@@ -10,7 +10,7 @@ import { UsuarioService } from './usuario.service';
 export class AuthService {
 
    constructor(
-      private readonly _usuarioDb: DbConnectionService,
+      private readonly _dbConn: DbConnectionService,
       private readonly _jwtService: JwtService,
       private readonly _usuarioService: UsuarioService
    ) { }
@@ -18,7 +18,7 @@ export class AuthService {
    public async validateUsernameEmail(usernameOrEmail: string): Promise<{ newUser: boolean }> {
       if (!usernameOrEmail) throw new BadRequestException("Informe um nome de usuário ou email.");
 
-      const supabase = this._usuarioDb.createSupabaseClient();
+      const supabase = this._dbConn.createSupabaseClient();
 
       const { data, error } = await supabase
          .from('Usuario')
@@ -38,7 +38,7 @@ export class AuthService {
       let supabase: SupabaseClient<any, "public", any>;
 
       try {
-         supabase = this._usuarioDb.createSupabaseClient();
+         supabase = this._dbConn.createSupabaseClient();
       }
       catch (error) {
          throw new InternalServerErrorException(`Ocorreu um erro ao se conectar com a base de dados: ${error}`);
