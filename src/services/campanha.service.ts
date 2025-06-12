@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+
 import { DbConnectionService } from 'src/db/db-connection.service';
 import { CampanhaDto } from './../models/db/campanha.dto';
 

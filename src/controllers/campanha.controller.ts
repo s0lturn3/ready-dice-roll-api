@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { AuthGuard } from 'src/guards/auth.guard';
 import { CampanhaDto } from 'src/models/db/campanha.dto';
 import { CampanhaService } from 'src/services/campanha.service';
