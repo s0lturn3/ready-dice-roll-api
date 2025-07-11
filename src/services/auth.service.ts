@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { SupabaseClient } from '@supabase/supabase-js';
 import { DbConnectionService } from 'src/db/db-connection.service';
 import { IUserLogin } from 'src/models/auth/iuser-login.model';
 import { UsuarioService } from './usuario.service';
@@ -9,7 +10,7 @@ import { UsuarioService } from './usuario.service';
 export class AuthService {
 
    constructor(
-      private readonly _usuarioDb: DbConnectionService,
+      private readonly _dbConn: DbConnectionService,
       private readonly _jwtService: JwtService,
       private readonly _usuarioService: UsuarioService
    ) { }
@@ -17,7 +18,7 @@ export class AuthService {
    public async validateUsernameEmail(usernameOrEmail: string): Promise<{ newUser: boolean }> {
       if (!usernameOrEmail) throw new BadRequestException("Informe um nome de usuário ou email.");
 
-      const supabase = this._usuarioDb.createSupabaseClient();
+      const supabase = this._dbConn.createSupabaseClient();
 
       const { data, error } = await supabase
          .from('Usuario')
@@ -34,7 +35,15 @@ export class AuthService {
 
 
    public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string, userName: string }> {
-      const supabase = this._usuarioDb.createSupabaseClient();
+      let supabase: SupabaseClient<any, "public", any>;
+
+      try {
+         supabase = this._dbConn.createSupabaseClient();
+      }
+      catch (error) {
+         throw new InternalServerErrorException(`Ocorreu um erro ao se conectar com a base de dados: ${error}`);
+      }
+
       let responseModel = { access_token: "", userId: "", userName: "" };
       
       const { data, error } = await supabase
@@ -44,7 +53,7 @@ export class AuthService {
          .eq('Senha', `${loginData.password}`);
 
       if (error) {
-         throw new InternalServerErrorException("Ocorreu um erro ao realizar login: " + error.message);
+         throw new InternalServerErrorException(`Ocorreu um erro ao realizar login: ${error.message}`);
       }
 
       if (Array.isArray(data) && data.length === 0) {
@@ -60,7 +69,7 @@ export class AuthService {
          };
       }
       catch (error) {
-         throw new InternalServerErrorException("Ocorreu um erro ao gerar o token de acesso: " + error);
+         throw new InternalServerErrorException(`Ocorreu um erro ao gerar o token de acesso: ${error}`);
       }
 
       this._usuarioService.updateLastLogin(data[0].Id);

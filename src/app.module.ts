@@ -21,14 +21,16 @@ import { CampanhaService } from './services/campanha.service';
     AuthModule,
     CampanhaModule,
 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
     }),
     JwtModule.register({
         global: true,
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: (60 * 15) + 's' },
+        signOptions: { expiresIn: (60 * 60) + 's' },
     }),
   ],
   controllers: [ UsuarioController, AuthController, CampanhaController ],
