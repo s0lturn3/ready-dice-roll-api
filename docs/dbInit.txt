@@ -1,292 +1,287 @@
 -- COMANDOS PARA INICIALIZAÇÃO DO BANCO DE DADOS
-
 CREATE TABLE "Usuario" (
-    "Id" TEXT NOT NULL,
-    "Username" TEXT NOT NULL UNIQUE,
-    "Email" TEXT NOT NULL UNIQUE,
-    "Senha" TEXT NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    "DtUltimoLogin" TEXT,
-    "GoogleId" TEXT,
-    "GithubId" TEXT,
-    "MicrosoftId" TEXT,
-    PRIMARY KEY ("Id")
+  "Id" TEXT NOT NULL,
+  "Username" TEXT NOT NULL UNIQUE,
+  "Email" TEXT NOT NULL UNIQUE,
+  "Senha" TEXT NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  "DtUltimoLogin" TEXT,
+  "GoogleId" TEXT,
+  "GithubId" TEXT,
+  "MicrosoftId" TEXT,
+  PRIMARY KEY ("Id")
 );
 
 CREATE TABLE "NivelPermissao" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nivel" INTEGER NOT NULL,
-    "Permissao" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nivel" INTEGER NOT NULL,
+  "Permissao" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
 
 CREATE TABLE "Campanha" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL,
-    "Descricao" TEXT,
-    "CriadoPor" TEXT NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    "DtUltAtualizacao" TEXT,
-    "Status" INTEGER NOT NULL DEFAULT 0,
-    CONSTRAINT "CampanhaCriadaPorUsuario" FOREIGN KEY ("CriadoPor") REFERENCES "Usuario"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL,
+  "Descricao" TEXT,
+  "CriadoPor" TEXT NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  "DtUltAtualizacao" TEXT,
+  "Status" INTEGER NOT NULL DEFAULT 0,
+  CONSTRAINT "CampanhaCriadaPorUsuario" FOREIGN KEY ("CriadoPor") REFERENCES "Usuario" ("Id")
 );
 
 CREATE TABLE "Personagem" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL,
-    "Historia" TEXT,
-    "Nivel" INTEGER NOT NULL DEFAULT 0,
-    "IsNpc" INTEGER NOT NULL DEFAULT 0,
-    "CriadoPor" TEXT NOT NULL,
-    "ControladoPor" TEXT NOT NULL,
-    "CampanhaId" INTEGER,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("ControladoPor") REFERENCES "Usuario"("Id"),
-    FOREIGN KEY ("CriadoPor") REFERENCES "Usuario"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL,
+  "Historia" TEXT,
+  "Nivel" INTEGER NOT NULL DEFAULT 0,
+  "IsNpc" INTEGER NOT NULL DEFAULT 0,
+  "CriadoPor" TEXT NOT NULL,
+  "ControladoPor" TEXT NOT NULL,
+  "CampanhaId" INTEGER,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("ControladoPor") REFERENCES "Usuario" ("Id"),
+  FOREIGN KEY ("CriadoPor") REFERENCES "Usuario" ("Id")
 );
 
 CREATE TABLE "TipoHabilidade" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nivel" INTEGER NOT NULL,
-    "Tipo" TEXT NOT NULL,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nivel" INTEGER NOT NULL,
+  "Tipo" TEXT NOT NULL,
+  "Descricao" TEXT
 );
 
 CREATE TABLE "Habilidade" (
-    "Id" SERIAL PRIMARY KEY,
-    "CampanhaId" INTEGER NOT NULL,
-    "Nome" TEXT NOT NULL,
-    "DescricaoCurta" TEXT NOT NULL,
-    "DescricaoCompleta" TEXT NOT NULL,
-    "Tipo" INTEGER NOT NULL,
-    "Icone" TEXT,
-    "Nivel" INTEGER NOT NULL DEFAULT 0,
-    "HabilidadeDependenciaId" INTEGER,
-    "DataCriacao" TEXT NOT NULL,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("HabilidadeDependenciaId") REFERENCES "Habilidade"("Id"),
-    FOREIGN KEY ("Tipo") REFERENCES "TipoHabilidade"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "CampanhaId" INTEGER NOT NULL,
+  "Nome" TEXT NOT NULL,
+  "DescricaoCurta" TEXT NOT NULL,
+  "DescricaoCompleta" TEXT NOT NULL,
+  "Tipo" INTEGER NOT NULL,
+  "Icone" TEXT,
+  "Nivel" INTEGER NOT NULL DEFAULT 0,
+  "HabilidadeDependenciaId" INTEGER,
+  "DataCriacao" TEXT NOT NULL,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("HabilidadeDependenciaId") REFERENCES "Habilidade" ("Id"),
+  FOREIGN KEY ("Tipo") REFERENCES "TipoHabilidade" ("Id")
 );
 
 CREATE TABLE "HabilidadePersonagem" (
-    "Id" SERIAL PRIMARY KEY,
-    "PersonagemId" INTEGER NOT NULL,
-    "HabilidadeId" INTEGER NOT NULL,
-    "IsDesbloqueada" INTEGER DEFAULT 0,
-    "DtDesbloqueio" TEXT,
-    FOREIGN KEY ("HabilidadeId") REFERENCES "Habilidade"("Id"),
-    FOREIGN KEY ("PersonagemId") REFERENCES "Personagem"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "PersonagemId" INTEGER NOT NULL,
+  "HabilidadeId" INTEGER NOT NULL,
+  "IsDesbloqueada" INTEGER DEFAULT 0,
+  "DtDesbloqueio" TEXT,
+  FOREIGN KEY ("HabilidadeId") REFERENCES "Habilidade" ("Id"),
+  FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id")
 );
 
 CREATE TABLE "Participante" (
-    "Id" TEXT NOT NULL,
-    "UsuarioId" TEXT NOT NULL,
-    "CampanhaId" INTEGER NOT NULL,
-    "PermissaoId" INTEGER NOT NULL,
-    PRIMARY KEY ("Id"),
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("PermissaoId") REFERENCES "NivelPermissao"("Id"),
-    FOREIGN KEY ("UsuarioId") REFERENCES "Usuario"("Id")
+  "Id" TEXT NOT NULL,
+  "UsuarioId" TEXT NOT NULL,
+  "CampanhaId" INTEGER NOT NULL,
+  "PermissaoId" INTEGER NOT NULL,
+  PRIMARY KEY ("Id"),
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("PermissaoId") REFERENCES "NivelPermissao" ("Id"),
+  FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id")
 );
 
 CREATE INDEX "idx_habilidade_tipo" ON "Habilidade" ("Tipo" ASC);
 
-
 -- Abaixo estão novas tabelas vindas da reestruturação e evolução do projeto...
-
 -- Referente às Campanhas
 CREATE TABLE "Sistema" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT,
-    "CriadoPor" Uuid NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    "DtUltAtualizacao" TEXT,
-    FOREIGN KEY ("CriadoPor") REFERENCES "Usuario"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT,
+  "CriadoPor" Uuid NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  "DtUltAtualizacao" TEXT,
+  FOREIGN KEY ("CriadoPor") REFERENCES "Usuario" ("Id")
 );
 
 ALTER TABLE "Campanha"
 ADD COLUMN "SistemaId" INTEGER,
-ADD FOREIGN KEY ("SistemaId") REFERENCES "Sistema"("Id");
-
+ADD FOREIGN KEY ("SistemaId") REFERENCES "Sistema" ("Id");
 
 -- Referente a Personagens
 CREATE TABLE "DadosPersonagem" (
-    "Id" SERIAL PRIMARY KEY,
-    "PersonagemId" INTEGER NOT NULL,
-    "HPMax" INTEGER NOT NULL,
-    "HPAtual" INTEGER NOT NULL,
-    "MPMax" INTEGER NOT NULL,
-    "MPAtual" INTEGER NOT NULL,
-    "XP" INTEGER NOT NULL DEFAULT 0,
-    "Nivel" INTEGER NOT NULL DEFAULT 1,
-    FOREIGN KEY ("PersonagemId") REFERENCES "Personagem"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "PersonagemId" INTEGER NOT NULL,
+  "HPMax" INTEGER NOT NULL,
+  "HPAtual" INTEGER NOT NULL,
+  "MPMax" INTEGER NOT NULL,
+  "MPAtual" INTEGER NOT NULL,
+  "XP" INTEGER NOT NULL DEFAULT 0,
+  "Nivel" INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id")
 );
 
 ALTER TABLE "DadosPersonagem"
 ADD COLUMN "RacaId" INTEGER,
 ADD COLUMN "ClasseId" INTEGER,
-ADD FOREIGN KEY ("ClasseId") REFERENCES "Classe"("Id"),
-ADD FOREIGN KEY ("RacaId") REFERENCES "Raca"("Id");
-
+ADD FOREIGN KEY ("ClasseId") REFERENCES "Classe" ("Id"),
+ADD FOREIGN KEY ("RacaId") REFERENCES "Raca" ("Id");
 
 -- Referente às classes e raças
 CREATE TABLE "Raca" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
 
 CREATE TABLE "Classe" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
-
 
 -- Referente às habilidades
 ALTER TABLE "Habilidade"
 ADD COLUMN "ExclusivaClasseId" INTEGER,
-ADD COLUMN "ExclusivaRacaId" INTEGER,
+ADD COLUMN "ExclusivaRacaId" INTEGER;
 
 ALTER TABLE "Habilidade"
 ADD COLUMN "posX" INTEGER,
-ADD COLUMN "posY" INTEGER;
-
-ADD FOREIGN KEY ("ExclusivaClasseId") REFERENCES "Classe"("Id"),
-ADD FOREIGN KEY ("ExclusivaRacaId") REFERENCES "Raca"("Id");
+ADD COLUMN "posY" INTEGER,
+ADD FOREIGN KEY ("ExclusivaClasseId") REFERENCES "Classe" ("Id"),
+ADD FOREIGN KEY ("ExclusivaRacaId") REFERENCES "Raca" ("Id");
 
 CREATE TABLE "Atributo" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
+
 CREATE TABLE "AtributoPersonagem" (
-    "Id" SERIAL PRIMARY KEY,
-    "PersonagemId" INTEGER NOT NULL,
-    "AtributoId" INTEGER NOT NULL,
-    "Valor" INTEGER NOT NULL,
-    FOREIGN KEY ("PersonagemId") REFERENCES "Personagem"("Id"),
-    FOREIGN KEY ("AtributoId") REFERENCES "Atributo"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "PersonagemId" INTEGER NOT NULL,
+  "AtributoId" INTEGER NOT NULL,
+  "Valor" INTEGER NOT NULL,
+  FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id"),
+  FOREIGN KEY ("AtributoId") REFERENCES "Atributo" ("Id")
 );
 
 CREATE TABLE "InventarioPersonagem" (
-    "Id" SERIAL PRIMARY KEY,
-    "PersonagemId" INTEGER NOT NULL,
-    "ItemId" INTEGER NOT NULL,
-    "Quantidade" INTEGER NOT NULL DEFAULT 1,
-    "DtAdicao" TEXT NOT NULL,
-    FOREIGN KEY ("PersonagemId") REFERENCES "Personagem"("Id"),
-    FOREIGN KEY ("ItemId") REFERENCES "Item"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "PersonagemId" INTEGER NOT NULL,
+  "ItemId" INTEGER NOT NULL,
+  "Quantidade" INTEGER NOT NULL DEFAULT 1,
+  "DtAdicao" TEXT NOT NULL,
+  FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id"),
+  FOREIGN KEY ("ItemId") REFERENCES "Item" ("Id")
 );
-
 
 -- Referente às Quests
 CREATE TABLE "Quest" (
-    "Id" SERIAL PRIMARY KEY,
-    "CampanhaId" INTEGER NOT NULL,
-    "Nome" TEXT NOT NULL,
-    "Descricao" TEXT NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    "DtAtualizacao" TEXT,
-    "Status" INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "CampanhaId" INTEGER NOT NULL,
+  "Nome" TEXT NOT NULL,
+  "Descricao" TEXT NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  "DtAtualizacao" TEXT,
+  "Status" INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id")
 );
-
 
 -- Referente a Itens
 CREATE TABLE "TipoItem" (
-    "Id" SERIAL PRIMARY KEY,
-    "Tipo" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
-);
-CREATE TABLE "Item" (
-    "Id" SERIAL PRIMARY KEY,
-    "CampanhaId" INTEGER NOT NULL,
-    "Nome" TEXT NOT NULL,
-    "Descricao" TEXT NOT NULL,
-    "TipoItemId" INTEGER,  -- Chave estrangeira para TipoItem
-    "Raridade" TEXT,
-    "Valor" INTEGER,
-    "Peso" DECIMAL,        -- Novo campo para o peso do item
-    "DtCriacao" TEXT NOT NULL,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("TipoItemId") REFERENCES "TipoItem"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Tipo" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
 
+CREATE TABLE "Item" (
+  "Id" SERIAL PRIMARY KEY,
+  "CampanhaId" INTEGER NOT NULL,
+  "Nome" TEXT NOT NULL,
+  "Descricao" TEXT NOT NULL,
+  "TipoItemId" INTEGER, -- Chave estrangeira para TipoItem
+  "Raridade" TEXT,
+  "Valor" INTEGER,
+  "Peso" DECIMAL, -- Novo campo para o peso do item
+  "DtCriacao" TEXT NOT NULL,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("TipoItemId") REFERENCES "TipoItem" ("Id")
+);
 
 -- Referente ao Bestiário
 CREATE TABLE "TipoCriatura" (
-    "Id" SERIAL PRIMARY KEY,
-    "Tipo" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
-);
-CREATE TABLE "Bestiario" (
-    "Id" SERIAL PRIMARY KEY,
-    "CampanhaId" INTEGER,  -- Pode ser nulo para bestiário global
-    "Nome" TEXT NOT NULL,
-    "Descricao" TEXT NOT NULL,
-    "TipoCriaturaId" INTEGER,  -- Substitui o campo "Tipo"
-    "Nivel" INTEGER,
-    "DtCriacao" TEXT NOT NULL,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("TipoCriaturaId") REFERENCES "TipoCriatura"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Tipo" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
 
+CREATE TABLE "Bestiario" (
+  "Id" SERIAL PRIMARY KEY,
+  "CampanhaId" INTEGER, -- Pode ser nulo para bestiário global
+  "Nome" TEXT NOT NULL,
+  "Descricao" TEXT NOT NULL,
+  "TipoCriaturaId" INTEGER, -- Substitui o campo "Tipo"
+  "Nivel" INTEGER,
+  "DtCriacao" TEXT NOT NULL,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("TipoCriaturaId") REFERENCES "TipoCriatura" ("Id")
+);
 
 -- Referente a Locais
 CREATE TABLE "Local" (
-    "Id" SERIAL PRIMARY KEY,
-    "CampanhaId" INTEGER NOT NULL,
-    "Nome" TEXT NOT NULL,
-    "Descricao" TEXT,
-    "DtCriacao" TEXT NOT NULL,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "CampanhaId" INTEGER NOT NULL,
+  "Nome" TEXT NOT NULL,
+  "Descricao" TEXT,
+  "DtCriacao" TEXT NOT NULL,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id")
 );
 
 -- Referente a documentos e registros dentro do mundo
 CREATE TABLE "TipoDocumento" (
-    "Id" SERIAL PRIMARY KEY,
-    "Nome" TEXT NOT NULL UNIQUE,
-    "Descricao" TEXT
+  "Id" SERIAL PRIMARY KEY,
+  "Nome" TEXT NOT NULL UNIQUE,
+  "Descricao" TEXT
 );
+
 CREATE TABLE "Registro" (
-    "Id" SERIAL PRIMARY KEY,
-    "Titulo" TEXT NOT NULL,
-    "Conteudo" TEXT NOT NULL,
-    "Autor" TEXT, -- Pode ser um personagem ou NPC que "escreveu" o registro
-    "CampanhaId" INTEGER NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    "TipoDocumentoId" INTEGER NOT NULL,
-    FOREIGN KEY ("CampanhaId") REFERENCES "Campanha"("Id"),
-    FOREIGN KEY ("TipoDocumentoId") REFERENCES "TipoDocumento"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "Titulo" TEXT NOT NULL,
+  "Conteudo" TEXT NOT NULL,
+  "Autor" TEXT, -- Pode ser um personagem ou NPC que "escreveu" o registro
+  "CampanhaId" INTEGER NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  "TipoDocumentoId" INTEGER NOT NULL,
+  FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
+  FOREIGN KEY ("TipoDocumentoId") REFERENCES "TipoDocumento" ("Id")
 );
 
 CREATE TABLE "ComentarioRegistro" (
-    "Id" SERIAL PRIMARY KEY,
-    "RegistroId" INTEGER NOT NULL,
-    "UsuarioId" Uuid NOT NULL,
-    "Conteudo" TEXT NOT NULL,
-    "DtCriacao" TEXT NOT NULL,
-    FOREIGN KEY ("RegistroId") REFERENCES "Registro"("Id"),
-    FOREIGN KEY ("UsuarioId") REFERENCES "Usuario"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "RegistroId" INTEGER NOT NULL,
+  "UsuarioId" Uuid NOT NULL,
+  "Conteudo" TEXT NOT NULL,
+  "DtCriacao" TEXT NOT NULL,
+  FOREIGN KEY ("RegistroId") REFERENCES "Registro" ("Id"),
+  FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id")
 );
+
 CREATE TABLE "VersaoRegistro" (
-    "Id" SERIAL PRIMARY KEY,
-    "RegistroId" INTEGER NOT NULL,
-    "Versao" INTEGER NOT NULL,
-    "ConteudoAntigo" TEXT NOT NULL,
-    "DtModificacao" TEXT NOT NULL,
-    "ModificadoPor" uUID NOT NULL,
-    FOREIGN KEY ("RegistroId") REFERENCES "Registro"("Id"),
-    FOREIGN KEY ("ModificadoPor") REFERENCES "Usuario"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "RegistroId" INTEGER NOT NULL,
+  "Versao" INTEGER NOT NULL,
+  "ConteudoAntigo" TEXT NOT NULL,
+  "DtModificacao" TEXT NOT NULL,
+  "ModificadoPor" uUID NOT NULL,
+  FOREIGN KEY ("RegistroId") REFERENCES "Registro" ("Id"),
+  FOREIGN KEY ("ModificadoPor") REFERENCES "Usuario" ("Id")
 );
+
 CREATE TABLE "RegistroRelacionado" (
-    "Id" SERIAL PRIMARY KEY,
-    "RegistroId" INTEGER NOT NULL,
-    "ItemId" INTEGER, -- Pode ser NULL se não for relacionado a um item
-    "PersonagemId" INTEGER, -- Pode ser NULL se não for relacionado a um personagem/NPC
-    FOREIGN KEY ("RegistroId") REFERENCES "Registro"("Id"),
-    FOREIGN KEY ("ItemId") REFERENCES "Item"("Id"),
-    FOREIGN KEY ("PersonagemId") REFERENCES "Personagem"("Id")
+  "Id" SERIAL PRIMARY KEY,
+  "RegistroId" INTEGER NOT NULL,
+  "ItemId" INTEGER, -- Pode ser NULL se não for relacionado a um item
+  "PersonagemId" INTEGER, -- Pode ser NULL se não for relacionado a um personagem/NPC
+  FOREIGN KEY ("RegistroId") REFERENCES "Registro" ("Id"),
+  FOREIGN KEY ("ItemId") REFERENCES "Item" ("Id"),
+  FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id")
 );
