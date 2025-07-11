@@ -1,99 +1,311 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Ready, Dice, Roll! 🎲
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Uma API REST moderna para gerenciamento de RPGs de mesa, desenvolvida com NestJS e TypeScript.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Sobre o Projeto
 
-## Description
+Ready, Dice, Roll! é uma aplicação backend que fornece APIs completas para gerenciamento de campanhas de RPG, personagens, sessões e muito mais. Ideal para mestres e jogadores que querem organizar suas aventuras de forma digital.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### ✨ Funcionalidades
 
-## Project setup
+- 🎯 **Gerenciamento de Campanhas**: Crie e gerencie campanhas com múltiplos jogadores
+- 👥 **Sistema de Usuários**: Autenticação e autorização com JWT
+- 🧙‍♂️ **Personagens**: CRUD completo para personagens com fichas personalizáveis
+- 📅 **Sessões**: Agendamento e controle de sessões de jogo
+- 🎲 **Sistema de Dados**: Rolagem de dados integrada com histórico
+- 📝 **Anotações**: Sistema de notas para mestres e jogadores
+- 🔐 **Segurança**: Autenticação JWT e controle de acesso baseado em roles
+
+## 🚀 Tecnologias Utilizadas
+
+- **Backend**: NestJS 11.x
+- **Linguagem**: TypeScript
+- **Banco de Dados**: PostgreSQL
+- **ORM**: TypeORM
+- **Autenticação**: JWT (Passport.js)
+- **Validação**: Class Validator
+- **Documentação**: Swagger/OpenAPI
+- **Testes**: Jest
+- **Linting**: ESLint + Prettier
+
+## 🛠️ Pré-requisitos
+
+- Node.js 20.x ou superior
+- npm ou yarn
+- Docker e Docker Compose
+- Git
+
+## 📦 Instalação
+
+1. **Clone o repositório**
+
+  ```bash
+  git clone https://github.com/s0lturn3/ready-dice-roll-api.git
+  cd ready-dice-roll-api
+  ```
+
+2. **Instale as dependências**
+
+  ```bash
+  npm install
+  # ou
+  yarn install
+  ```
+
+3. **Configure as variáveis de ambiente**
+
+  ```bash
+  cp .env.example .env
+  ```
+
+  Edite o arquivo `.env` com suas configurações:
+
+  ```env
+  # Database
+  DB_HOST=localhost
+  DB_PORT=5432
+  DB_USERNAME=postgres
+  DB_PASSWORD=sua_senha
+  DB_DATABASE=ready_dice_roll
+
+  # JWT
+  JWT_SECRET=seu_jwt_secret_super_seguro
+  JWT_EXPIRES_IN=7d
+
+  # Application
+  PORT=3000
+  NODE_ENV=development
+  ```
+
+4. **Inicie o banco de dados com Docker**
+
+  ```bash
+  docker-compose up -d db
+  ```
+
+5. **Executar seeds (opcional)**
+
+  ```bash
+  npm run seed
+  ```
+
+## 🚀 Executando a Aplicação
+
+### Desenvolvimento
 
 ```bash
-$ npm install
+# Inicia o banco de dados
+docker-compose up -d db
+
+# Inicia a aplicação
+npm run start:dev
+
+# Ou inicia tudo de uma vez
+docker-compose up -d
 ```
 
-## Compile and run the project
+### Produção
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+### Usando Docker Compose (Recomendado)
 
 ```bash
-# unit tests
-$ npm run test
+# Inicia toda a stack (app + db)
+docker-compose up -d
 
-# e2e tests
-$ npm run test:e2e
+# Visualizar logs
+docker-compose logs -f
 
-# test coverage
-$ npm run test:cov
+# Parar serviços
+docker-compose down
 ```
 
-## Deployment
+A API estará disponível em `http://localhost:3000/api`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📚 Documentação da API
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Após executar a aplicação, acesse:
+
+- **Swagger UI**: `http://localhost:3000/api/docs`
+- **Redoc**: `http://localhost:3000/api/redoc`
+
+## 🧪 Testes
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+# Testes unitários
+npm run test
+
+# Testes e2e
+npm run test:e2e
+
+# Coverage
+npm run test:cov
+
+# Testes em modo watch
+npm run test:watch
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 📊 Scripts Disponíveis
 
-## Resources
+```bash
+# Desenvolvimento
+npm run start:dev          # Inicia em modo desenvolvimento
+npm run start:debug        # Inicia em modo debug
 
-Check out a few resources that may come in handy when working with NestJS:
+# Build
+npm run build             # Build de produção
+npm run start:prod        # Inicia versão de produção
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Docker
+docker-compose up -d      # Inicia toda a stack
+docker-compose up -d db   # Inicia apenas o banco
+docker-compose down       # Para todos os serviços
+docker-compose logs -f    # Visualiza logs
 
-## Support
+# Database
+npm run migration:generate # Gera nova migration
+npm run migration:run      # Executa migrations
+npm run migration:revert   # Reverte última migration
+npm run seed              # Executa seeds
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Qualidade de código
+npm run lint              # ESLint
+npm run lint:fix          # ESLint com correção automática
+npm run format            # Prettier
+```
 
-## Stay in touch
+## 🗂️ Estrutura do Projeto
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```text
+src/
+├── auth/                 # Módulo de autenticação
+├── users/                # Módulo de usuários
+├── campaigns/            # Módulo de campanhas
+├── characters/           # Módulo de personagens
+├── sessions/             # Módulo de sessões
+├── dice/                 # Módulo de sistema de dados
+├── notes/                # Módulo de anotações
+├── common/               # Utilitários e decorators
+│   ├── decorators/
+│   ├── guards/
+│   ├── interceptors/
+│   └── pipes/
+├── config/               # Configurações
+├── database/             # Migrations e seeds
+│   ├── migrations/
+│   └── seeds/
+└── main.ts              # Entrada da aplicação
+```
 
-## License
+## 🔐 Autenticação
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+A API utiliza JWT para autenticação. Para acessar endpoints protegidos:
+
+1. **Login**
+
+  ```bash
+  POST /auth/login
+  {
+    "email": "usuario@email.com",
+    "password": "senha123"
+  }
+  ```
+
+2. **Use o token retornado no header**
+
+  ```bash
+  Authorization: Bearer seu_jwt_token_aqui
+  ```
+
+## 📋 Endpoints Principais
+
+### Autenticação
+
+- `POST /auth/login` - Login
+- `POST /auth/register` - Registro
+- `POST /auth/refresh` - Refresh token
+
+### Usuários
+
+- `GET /users/profile` - Perfil do usuário
+- `PUT /users/profile` - Atualizar perfil
+
+### Campanhas
+
+- `GET /campaigns` - Listar campanhas
+- `POST /campaigns` - Criar campanha
+- `GET /campaigns/:id` - Detalhes da campanha
+- `PUT /campaigns/:id` - Atualizar campanha
+- `DELETE /campaigns/:id` - Deletar campanha
+
+### Personagens
+
+- `GET /characters` - Listar personagens
+- `POST /characters` - Criar personagem
+- `GET /characters/:id` - Detalhes do personagem
+- `PUT /characters/:id` - Atualizar personagem
+- `DELETE /characters/:id` - Deletar personagem
+
+## 🤝 Contribuindo
+
+Contribuições são sempre bem-vindas! Para contribuir:
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feat/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feat/nova-feature`)
+5. Abra um Pull Request para a branch `dev`
+
+### 📝 Padrões de Commit
+
+Utilizamos [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` Nova funcionalidade
+- `fix:` Correção de bug
+- `docs:` Documentação
+- `style:` Formatação
+- `refactor:` Refatoração
+- `test:` Testes
+- `chore:` Manutenção
+
+## 🐛 Reportando Bugs
+
+Encontrou um bug? Abra uma [issue](https://github.com/s0lturn3/ready-dice-roll-api/issues) com:
+
+- Descrição clara do problema
+- Passos para reproduzir
+- Comportamento esperado vs atual
+- Screenshots (se aplicável)
+- Ambiente (OS, Node.js version, etc.)
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🎯 Roadmap
+
+- [ ] Sistema de notificações em tempo real
+- [ ] Integração com Discord
+- [ ] Sistema de mapas interativos
+- [ ] Suporte a múltiplos sistemas de RPG
+- [ ] App mobile
+- [ ] Modo offline
+
+## 👥 Autores
+
+- **Solturne** - *Desenvolvedor Principal* - [@s0lturne](https://github.com/s0lturn3)
+
+## 🙏 Agradecimentos
+
+- Comunidade NestJS
+- Meu amigo que me inspirou a iniciar o projeto
+- Jogadores de RPG que inspiraram este projeto
+- Contribuidores do projeto
+
+---
+
+**Ready, Dice, Roll!** - Tornando suas aventuras de RPG mais organizadas e divertidas! 🎲✨
