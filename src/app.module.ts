@@ -30,7 +30,7 @@ import { CampanhaService } from './services/campanha.service';
     JwtModule.register({
         global: true,
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: (60 * 15) + 's' },
+        signOptions: { expiresIn: (60 * 60) + 's' },
     }),
   ],
   controllers: [ UsuarioController, AuthController, CampanhaController ],
