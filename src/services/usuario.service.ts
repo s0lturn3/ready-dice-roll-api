@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { DbConnectionService } from 'src/db/db-connection.service';
-import { UsuarioDtoRecord } from 'src/models/db/usuario.dto';
+import { UsuarioDtoRecord } from 'src/models/db/usuario.entity';
 
 import { v4 as uuidv4 } from 'uuid';
 

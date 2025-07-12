@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 import { IUserLogin } from 'src/models/auth/iuser-login.model';
-import { UsuarioDtoRecord } from 'src/models/db/usuario.dto';
+import { UsuarioDtoRecord } from 'src/models/db/usuario.entity';
 import { AuthService } from 'src/services/auth.service';
 import { UsuarioService } from 'src/services/usuario.service';
 
