@@ -1,13 +1,11 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { IUserLogin } from 'src/shared/models/auth/iuser-login.model';
-import { UsuarioDtoRecord } from 'src/shared/models/db/usuario.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,23 +30,10 @@ export class AuthController {
 
 
   // #region GET
-  
   @UseGuards(AuthGuard)
   @Get('jwttest')
   public async jwttest(): Promise<{ name: string, message: string, expiredAt: string }> {
     return { name: "abc", message: "bca", expiredAt: "cab" };
-  }
-
-
-
-  @Get()
-  findAll() {
-    return this._authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this._authService.findOne(+id);
   }
   // #endregion GET
 
@@ -74,32 +59,19 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
   @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao criar o usuário.' })
   @Post('signIn')
-  public async signIn(@Body() createUsuarioData: UsuarioDtoRecord): Promise<{ access_token: string, userId: string, userName: string }> {
-    const { access_token, userId, userName } = await this._usersService.createUsuario(createUsuarioData);
+  public async signIn(@Body() createUserDto: CreateUserDto): Promise<{ access_token: string, userId: string, userName: string }> {
+    const { access_token, userId, userName } = await this._usersService.create(createUserDto);
 
     return { access_token, userId, userName };
-  }
-
-
-
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this._authService.create(createAuthDto);
   }
   // #endregion POST
 
   // #region PATCH
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this._authService.update(+id, updateAuthDto);
-  }
+  
   // #endregion PATCH
 
   // #region DELETE
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this._authService.remove(+id);
-  }
+  
   // #endregion DELETE
 
 

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
-import { CampanhaDto } from 'src/shared/models/db/campanha.dto';
 import { CampaignsService } from './campaigns.service';
+import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { Campaign } from './entities/campaign.entity';
 
+@ApiBearerAuth('access-token')
 @Controller('campaigns')
 export class CampaignsController {
 
@@ -27,14 +29,12 @@ export class CampaignsController {
 
 
   // #region GET
-
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Busca a lista de campanhas cadastradas pelo usuário ou que ele tenha acesso.' })
   @Get('list')
   public async list(): Promise<any> {
     return this._campaignsService.getList();
   }
-
 
 
   // @Get()
@@ -50,12 +50,11 @@ export class CampaignsController {
 
   // #region POST
   
-  // @UseGuards(AuthGuard)
-  // @Post('create')
-  // public async create(@Body() createCampanhaData: CampanhaDto): Promise<void> {
-  //   await this._campaignsService.create(createCampanhaData);
-  // }
-
+  @UseGuards(AuthGuard)
+  @Post()
+  public async create(@Body() createCampaignDto: CreateCampaignDto): Promise<Campaign> {
+    return await this._campaignsService.create(createCampaignDto);
+  }
 
 
   // @Post()
@@ -80,7 +79,7 @@ export class CampaignsController {
 
 
   // #region ==========> UTILS <==========
-  private validateLoginParams(params: CampanhaDto): void {
+  private validateLoginParams(params: CreateCampaignDto): void {
     
   }
   // #endregion ==========> UTILS <==========

@@ -1,102 +1,124 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { DbConnectionService } from 'src/shared/db/db-connection.service';
+import { InjectRepository } from '@nestjs/typeorm';
 import { IUserLogin } from 'src/shared/models/auth/iuser-login.model';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
 
+  // #region Constructor & Dependencies
   constructor(
-    private readonly _dbConn: DbConnectionService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     private readonly _jwtService: JwtService,
     private readonly _usersService: UsersService
   ) { }
+  // #endregion Constructor & Dependencies
 
+
+  // #region Public Methods
+
+  /** Valida se um usuário já está cadastrado no sistema ou não com base no Email/Username informado.
+   * 
+   * @param usernameOrEmail String com username ou email do usuário
+   * @returns Estrutura simples que informa se é um novo usuário ou um já cadastrado
+   */
   public async validateUsernameEmail(usernameOrEmail: string): Promise<{ newUser: boolean }> {
     if (!usernameOrEmail) throw new BadRequestException("Informe um nome de usuário ou email.");
 
-    const supabase = this._dbConn.createSupabaseClient();
-
-    const { data, error } = await supabase
-        .from('Usuario')
-        .select('Id, Username, Email')
-        .or(`Email.eq.${usernameOrEmail}, Username.eq.${usernameOrEmail}`)
-
-    if (error) {
-        throw new InternalServerErrorException("Ocorreu um erro ao validar o usuário/email: " + error.message);
+    try {
+      const user = await this.userRepository.findOne({
+        where: [
+          { Email: usernameOrEmail },
+          { Username: usernameOrEmail }
+        ],
+      });
+  
+      if (!user) return { newUser: true };
+      return { newUser: false };
     }
-
-    if (Array.isArray(data) && data.length === 0) return { newUser: true };
-    else return { newUser: false };
+    catch (error) {
+      throw new InternalServerErrorException("Ocorreu um erro ao validar o usuário/email: " + error.message);
+    }
   }
 
-
+  /** Realiza o login de um usuário no sistema.
+   * Recebe Email/Username e senha.
+   * 
+   * @param loginData Dados do login
+   * @returns Estrutura com token de aceso, ID e nome do usuário
+   */
   public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string, userName: string }> {
-    let supabase: SupabaseClient<any, "public", any>;
-
-    try {
-        supabase = this._dbConn.createSupabaseClient();
-    }
-    catch (error) {
-        throw new InternalServerErrorException(`Ocorreu um erro ao se conectar com a base de dados: ${error}`);
-    }
-
     let responseModel = { access_token: "", userId: "", userName: "" };
-    
-    const { data, error } = await supabase
-        .from('Usuario')
-        .select('Id, Username, Email')
-        .or(`Email.eq.${loginData.usernameOrEmail}, Username.eq.${loginData.usernameOrEmail}`)
-        .eq('Senha', `${loginData.password}`);
+    let payload: { sub: string, username: string } = null;
+    let userToLogon: User;
 
-    if (error) {
-        throw new InternalServerErrorException(`Ocorreu um erro ao realizar login: ${error.message}`);
-    }
-
-    if (Array.isArray(data) && data.length === 0) {
-        throw new UnauthorizedException("Usuário e/ou senha incorreto(s).");
-    }
-
-    const payload = { sub: data[0].Id, username: data[0].Username };
+    // Busca o usuário no banco
     try {
-        responseModel = {
-          access_token: await this._jwtService.signAsync(payload),
-          userId: data[0].Id,
-          userName: data[0].Username
-        };
+      userToLogon = await this.userRepository.findOne({
+        where: [
+          { Senha: loginData.password, Email: loginData.usernameOrEmail },
+          { Senha: loginData.password, Username: loginData.usernameOrEmail }
+        ]
+      });
     }
     catch (error) {
-        throw new InternalServerErrorException(`Ocorreu um erro ao gerar o token de acesso: ${error}`);
+      throw new InternalServerErrorException(`Ocorreu um erro ao realizar login: ${error.message}`);
     }
 
-    this._usersService.updateLastLogin(data[0].Id);
+    if (!userToLogon) throw new UnauthorizedException("Usuário e/ou senha incorreto(s).");
+
+    // Se encontrar o usuário, gera o token de acesso
+    payload = { sub: userToLogon.Id, username: userToLogon.Username };
+    try {
+      responseModel = {
+        access_token: await this._jwtService.signAsync(payload),
+        userId: userToLogon.Id,
+        userName: userToLogon.Username
+      };
+    }
+    catch (error) {
+      throw new InternalServerErrorException(`Ocorreu um erro ao gerar o token de acesso: ${error}`);
+    }
+
+    // Atualiza data do último login
+    this._usersService.updateLastLogin(userToLogon.Id);
     return responseModel;
   }
+  // #endregion Public Methods
 
 
+  // #region Private Methods
+  // [...]
+  // #endregion Private Methods
 
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  // #region Logic
+  // [...]
+  // #endregion Logic
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+  // #region Database Operations
+  // [...]
+  // #endregion Database Operations
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
+
+  // #region Validation & Error Handling
+  // [...]
+  // #endregion Validation & Error Handling
+
+
+  // #region External Services Integration
+  // [...]
+  // #endregion External Services Integration
+
+
+  // #region Utility Methods
+  // [...]
+  // #endregion Utility Methods
 }

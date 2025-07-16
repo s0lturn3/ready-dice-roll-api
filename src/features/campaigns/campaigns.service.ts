@@ -1,100 +1,78 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { DbConnectionService } from 'src/shared/db/db-connection.service';
-import { CampanhaDto } from 'src/shared/models/db/campanha.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { Campaign } from './entities/campaign.entity';
 
 @Injectable()
 export class CampaignsService {
 
-  // #region ==========> PROPERTIES <==========
-  
-  // #region PRIVATE
-  private supabase: SupabaseClient<any, "public", any>;
-  // #endregion PRIVATE
+  // #region Constructor & Dependencies
+  constructor(
+    @InjectRepository(Campaign)
+    private readonly campaignRepository: Repository<Campaign>
+  ) { }
+  // #endregion Constructor & Dependencies
 
-  // #region PUBLIC
-  // [...]
-  // #endregion PUBLIC
 
-  // #endregion ==========> PROPERTIES <==========
+  // #region Public Methods
 
-  constructor( private readonly _dbConn: DbConnectionService ) {
-    this.initializeConnection();
-  }
-
-  // #region ==========> API METHODS <==========
-
-  // #region GET
-  public async getList(): Promise<any> {
-    let response: CampanhaDto[];
+  /** Busca todas as Campanhas na base de dados.
+   * 
+   * @returns Lista de Campanhas encontradas na base
+   */
+  public async getList(): Promise<Campaign[]> {
+    let response: Campaign[];
 
     try {
-      
-
-      const { data, error } = await this.supabase
-        .from('Campanha')
-        .select('*')
-        .order('Nome')
-
-      return data;
-
-      response = data;
+      response = await this.campaignRepository.find();
       return response;
     }
     catch (error) {
       throw new InternalServerErrorException(`Ocorreu um erro interno ao buscar a lista de Campanhas.: ${error}`);
     }
   }
-  // #endregion GET
 
-  // #region POST
-  public async create(campanhaData: CampanhaDto): Promise<void> {
-    // const supabase = this._dbConn.createSupabaseClient();
-    
-  }
-  // #endregion POST
-
-  // #region PUT
-  // [...]
-  // #endregion PUT
-
-  // #region DELETE
-  // [...]
-  // #endregion DELETE
-
-  // #endregion ==========> API METHODS <==========
-
-
-  // #region ==========> UTILS <==========
-  private initializeConnection(): void {
+  public async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     try {
-      this.supabase = this._dbConn.createSupabaseClient();
+      const campaign = this.campaignRepository.create(createCampaignDto);
+      return await this.campaignRepository.save(campaign);
     }
     catch (error) {
-      throw new InternalServerErrorException(`Ocorreu um erro ao se conectar com a base de dados: ${error}`);
+      throw new InternalServerErrorException(`Ocorreu um erro interno ao criar uma Campanha.: ${error}`);
     }
   }
-  // #endregion ==========> UTILS <==========
+  // #endregion Public Methods
 
 
-  // create(createCampaignDto: CreateCampaignDto) {
-  //   return 'This action adds a new campaign';
-  // }
+  // #region Private Methods
+  // [...]
+  // #endregion Private Methods
 
-  // findAll() {
-  //   return `This action returns all campaigns`;
-  // }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} campaign`;
-  // }
+  // #region Logic
+  // [...]
+  // #endregion Logic
 
-  // update(id: number, updateCampaignDto: UpdateCampaignDto) {
-  //   return `This action updates a #${id} campaign`;
-  // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} campaign`;
-  // }
+  // #region Database Operations
+  // [...]
+  // #endregion Database Operations
+
+
+  // #region Validation & Error Handling
+  // [...]
+  // #endregion Validation & Error Handling
+
+
+  // #region External Services Integration
+  // [...]
+  // #endregion External Services Integration
+
+
+  // #region Utility Methods
+  // [...]
+  // #endregion Utility Methods
+
 }

@@ -4,28 +4,19 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
 
-import { DbConnectionService } from './shared/db/db-connection.service';
 import { jwtConstants } from './shared/models/constants/constants';
 
-import { AuthController } from './features/auth/auth.controller';
 import { AuthModule } from './features/auth/auth.module';
-import { AuthService } from './features/auth/auth.service';
-import { CampaignsController } from './features/campaigns/campaigns.controller';
 import { CampaignsModule } from './features/campaigns/campaigns.module';
-import { CampaignsService } from './features/campaigns/campaigns.service';
+import { Campaign } from './features/campaigns/entities/campaign.entity';
 import { CharactersModule } from './features/characters/characters.module';
 import { SessionsModule } from './features/sessions/sessions.module';
-import { UsersController } from './features/users/users.controller';
+import { User } from './features/users/entities/user.entity';
 import { UsersModule } from './features/users/users.module';
-import { UsersService } from './features/users/users.service';
 
 @Module({
   imports: [
-    AuthModule,
-    CampaignsModule,
-
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -33,9 +24,9 @@ import { UsersService } from './features/users/users.service';
       http: process.env.NODE_ENV !== 'production',
     }),
     JwtModule.register({
-        global: true,
-        secret: jwtConstants.secret,
-        signOptions: { expiresIn: (60 * 60) + 's' },
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: (60 * 60) + 's' },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ ConfigModule ],
@@ -47,17 +38,19 @@ import { UsersService } from './features/users/users.service';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [join(process.cwd(), 'dist/**/*.entity.ts')],
+
+        // TODO: Estudar o porquê deste trecho não funcionar corretamente
+        // entities: [join(process.cwd(), 'dist/**/*.entity.ts')],
+        entities: [User, Campaign],
       })
     }),
-    UsersModule,
-    CampaignsModule,
+    AuthModule,
     UsersModule,
     CampaignsModule,
     CharactersModule,
     SessionsModule
   ],
-  controllers: [ UsersController, AuthController, CampaignsController ],
-  providers: [ AuthService, UsersService, CampaignsService, DbConnectionService ],
+  // controllers: [ UsersController, AuthController, CampaignsController ],
+  // providers: [ AuthService, UsersService, CampaignsService ],
 })
 export class AppModule { }

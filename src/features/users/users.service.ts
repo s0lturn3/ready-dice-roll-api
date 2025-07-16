@@ -1,65 +1,73 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { DbConnectionService } from 'src/shared/db/db-connection.service';
-import { UsuarioDtoRecord } from 'src/shared/models/db/usuario.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
 
+  // #region Constructor & Dependencies
   constructor(
-    private readonly _dbConnectionService: DbConnectionService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    
     private readonly _jwtService: JwtService
   ) { }
+  // #endregion Constructor & Dependencies
 
-  public async updateLastLogin(userId: string): Promise<void> {
-    if (!userId || userId === "") throw new InternalServerErrorException("Não foi possível atualizar o último login do usuário. Tente novamente.");
+  
+  // #region Public Methods
+  public async updateLastLogin(id: string): Promise<User> {
+    if (!id) throw new InternalServerErrorException("Não foi possível atualizar o último login do usuário. Tente novamente.");
 
-    const supabase = this._dbConnectionService.createSupabaseClient();
+    try {
+      const user = await this.userRepository.findOne({
+        where: { Id: id }
+      });
 
-    const { error } = await supabase
-      .from('Usuario')
-      .update({ DtUltimoLogin: new Date() })
-      .eq('Id', userId)
-      .select();
-      
-    if (error) {
+      if (!user) throw new NotFoundException("Nenhum usuário encontrado com a chave informada.");
+
+      user.DtUltimoLogin = new Date();
+      return await this.userRepository.save(user);
+    }
+    catch (error) {
       throw new InternalServerErrorException("Ocorreu um erro ao validar o usuário/email: " + error.message);
     }
   }
 
+  public async create(createUserDto: CreateUserDto): Promise<{ access_token: string, userId: string, userName: string }> {
+    let createdUser;
 
-  public async createUsuario(usuario: UsuarioDtoRecord): Promise<{ access_token: string, userId: string, userName: string }> {
-    const supabase = this._dbConnectionService.createSupabaseClient();
-    usuario.Id = uuidv4();
+    // Cria o novo usuário no banco
+    try {
+      const user = this.userRepository.create(createUserDto);
 
-    const { data, error } = await supabase
-      .from('Usuario')
-      .insert([
-        {
-          Id: usuario.Id,
-          Username: usuario.Username,
-          Email: usuario.Email,
-          Senha: usuario.Senha,
-          DtCriacao: new Date(),
-        },
-      ])
-      .select();
+      if (!user) throw new InternalServerErrorException("O Usuário não foi criado.");
 
-    if (error) {
-      throw new InternalServerErrorException("Ocorreu um erro ao criar o registro do usuário: " + error.message);
+      user.Id = uuidv4();
+      user.DtCriacao = new Date();
+      
+      createdUser = await this.userRepository.save(user);
+    }
+    catch (error) {
+      throw new InternalServerErrorException("Ocorreu um erro ao cadastrar o usuário. Tente logar novamente: " + error);
     }
 
+    if (!createdUser) throw new InternalServerErrorException("O Usuário não foi criado.");
+
+    // Se o usuário foi criado, gera o token de acesso para o login
     try {
-      const payload = { sub: data[0].Id, username: data[0].Username };
+      const payload = { sub: createdUser.Id, username: createdUser.Username };
+
       return {
         access_token: await this._jwtService.signAsync(payload),
-        userId: data[0].Id,
-        userName: data[0].Username
+        userId: createdUser.Id,
+        userName: createdUser.Username
       };
     }
     catch (error) {
@@ -68,45 +76,54 @@ export class UsersService {
   }
 
 
-  public async updatePassword(userId: string, oldPassword: string, newPassword: string): Promise<void> {
-    if (!userId || userId === "") throw new InternalServerErrorException("Não foi possível atualizar a senha do usuário. Tente novamente.");
+  public async updatePassword(id: string, oldPassword: string, newPassword: string): Promise<User> {
+    if (!id || id === "") throw new InternalServerErrorException("Não foi possível atualizar a senha do usuário. Tente novamente.");
     if (!oldPassword || oldPassword === "") throw new InternalServerErrorException("Informe a senha atual.");
     if (!newPassword || newPassword === "") throw new InternalServerErrorException("Informe a nova senha.");
 
-    const supabase = this._dbConnectionService.createSupabaseClient();
+    try {
+      const user = await this.userRepository.findOne({
+        where: { Id: id, Senha: oldPassword }
+      });
 
-    const { error } = await supabase
-      .from('Usuario')
-      .update({ Senha: newPassword })
-      .eq('Id', userId)
-      .eq('Senha', oldPassword)
-      .select();
+      if (!user) throw new NotFoundException();
 
-    if (error) {
+      return await this.userRepository.save(user);
+    }
+    catch (error) {
       throw new InternalServerErrorException("Ocorreu um erro ao alterar a senha do usuário: " + error.message);
     }
   }
+  // #endregion Public Methods
 
-  
-  
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  // #region Private Methods
+  // [...]
+  // #endregion Private Methods
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  // #region Logic
+  // [...]
+  // #endregion Logic
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
+  // #region Database Operations
+  // [...]
+  // #endregion Database Operations
+
+
+  // #region Validation & Error Handling
+  // [...]
+  // #endregion Validation & Error Handling
+
+
+  // #region External Services Integration
+  // [...]
+  // #endregion External Services Integration
+
+
+  // #region Utility Methods
+  // [...]
+  // #endregion Utility Methods
 
 }

@@ -5,11 +5,12 @@ CREATE TABLE "Usuario" (
   "Username" TEXT NOT NULL UNIQUE,
   "Email" TEXT NOT NULL UNIQUE,
   "Senha" TEXT NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
-  "DtUltimoLogin" TEXT,
+  "DtCriacao" DATE NOT NULL,
+  "DtUltimoLogin" DATE,
   "GoogleId" TEXT,
   "GithubId" TEXT,
   "MicrosoftId" TEXT,
+  "Imagem" BYTEA NULL,
   PRIMARY KEY ("Id")
 );
 
@@ -69,8 +70,8 @@ CREATE TABLE "Sistema" (
   "Nome" TEXT NOT NULL UNIQUE,
   "Descricao" TEXT,
   "CriadoPor" uuid NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
-  "DtUltAtualizacao" TEXT,
+  "DtCriacao" DATE NOT NULL,
+  "DtUltAtualizacao" DATE,
   FOREIGN KEY ("CriadoPor") REFERENCES "Usuario" ("Id")
 );
 
@@ -80,8 +81,8 @@ CREATE TABLE "Campanha" (
   "Nome" TEXT NOT NULL,
   "Descricao" TEXT,
   "CriadoPor" uuid NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
-  "DtUltAtualizacao" TEXT,
+  "DtCriacao" DATE NOT NULL,
+  "DtUltAtualizacao" DATE,
   "Status" INTEGER NOT NULL DEFAULT 0,
   "SistemaId" INTEGER,
   CONSTRAINT "CampanhaCriadaPorUsuario" FOREIGN KEY ("CriadoPor") REFERENCES "Usuario" ("Id"),
@@ -112,7 +113,7 @@ CREATE TABLE "Item" (
   "Raridade" TEXT,
   "Valor" INTEGER,
   "Peso" DECIMAL,
-  "DtCriacao" TEXT NOT NULL,
+  "DtCriacao" DATE NOT NULL,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
   FOREIGN KEY ("TipoItemId") REFERENCES "TipoItem" ("Id")
 );
@@ -144,8 +145,8 @@ CREATE TABLE "Quest" (
   "CampanhaId" INTEGER NOT NULL,
   "Nome" TEXT NOT NULL,
   "Descricao" TEXT NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
-  "DtAtualizacao" TEXT,
+  "DtCriacao" DATE NOT NULL,
+  "DtAtualizacao" DATE,
   "Status" INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id")
 );
@@ -157,7 +158,7 @@ CREATE TABLE "Bestiario" (
   "Descricao" TEXT NOT NULL,
   "TipoCriaturaId" INTEGER,
   "Nivel" INTEGER,
-  "DtCriacao" TEXT NOT NULL,
+  "DtCriacao" DATE NOT NULL,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
   FOREIGN KEY ("TipoCriaturaId") REFERENCES "TipoCriatura" ("Id")
 );
@@ -167,7 +168,7 @@ CREATE TABLE "Local" (
   "CampanhaId" INTEGER NOT NULL,
   "Nome" TEXT NOT NULL,
   "Descricao" TEXT,
-  "DtCriacao" TEXT NOT NULL,
+  "DtCriacao" DATE NOT NULL,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id")
 );
 
@@ -177,7 +178,7 @@ CREATE TABLE "Registro" (
   "Conteudo" TEXT NOT NULL,
   "Autor" TEXT,
   "CampanhaId" INTEGER NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
+  "DtCriacao" DATE NOT NULL,
   "TipoDocumentoId" INTEGER NOT NULL,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
   FOREIGN KEY ("TipoDocumentoId") REFERENCES "TipoDocumento" ("Id")
@@ -205,7 +206,7 @@ CREATE TABLE "HabilidadePersonagem" (
   "PersonagemId" INTEGER NOT NULL,
   "HabilidadeId" INTEGER NOT NULL,
   "IsDesbloqueada" INTEGER DEFAULT 0,
-  "DtDesbloqueio" TEXT,
+  "DtDesbloqueio" DATE,
   FOREIGN KEY ("HabilidadeId") REFERENCES "Habilidade" ("Id"),
   FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id")
 );
@@ -224,7 +225,7 @@ CREATE TABLE "InventarioPersonagem" (
   "PersonagemId" INTEGER NOT NULL,
   "ItemId" INTEGER NOT NULL,
   "Quantidade" INTEGER NOT NULL DEFAULT 1,
-  "DtAdicao" TEXT NOT NULL,
+  "DtAdicao" DATE NOT NULL,
   FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id"),
   FOREIGN KEY ("ItemId") REFERENCES "Item" ("Id")
 );
@@ -246,7 +247,7 @@ CREATE TABLE "ComentarioRegistro" (
   "RegistroId" INTEGER NOT NULL,
   "UsuarioId" uuid NOT NULL,
   "Conteudo" TEXT NOT NULL,
-  "DtCriacao" TEXT NOT NULL,
+  "DtCriacao" DATE NOT NULL,
   FOREIGN KEY ("RegistroId") REFERENCES "Registro" ("Id"),
   FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id")
 );
@@ -256,7 +257,7 @@ CREATE TABLE "VersaoRegistro" (
   "RegistroId" INTEGER NOT NULL,
   "Versao" INTEGER NOT NULL,
   "ConteudoAntigo" TEXT NOT NULL,
-  "DtModificacao" TEXT NOT NULL,
+  "DtModificacao" DATE NOT NULL,
   "ModificadoPor" uuid NOT NULL,
   FOREIGN KEY ("RegistroId") REFERENCES "Registro" ("Id"),
   FOREIGN KEY ("ModificadoPor") REFERENCES "Usuario" ("Id")
