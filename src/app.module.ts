@@ -2,26 +2,29 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 
-import { UsuarioController } from './controllers/usuario.controller';
-import { UsuarioService } from './services/usuario.service';
-
-import { AuthController } from './controllers/auth.controller';
-import { AuthModule } from './modules/auth.module';
-import { AuthService } from './services/auth.service';
-
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { CampanhaController } from './controllers/campanha.controller';
-import { DbConnectionService } from './db/db-connection.service';
-import { jwtConstants } from './models/constants/constants';
-import { CampanhaModule } from './modules/campanha.module';
-import { CampanhaService } from './services/campanha.service';
+
+import { DbConnectionService } from './shared/db/db-connection.service';
+import { jwtConstants } from './shared/models/constants/constants';
+
+import { AuthController } from './features/auth/auth.controller';
+import { AuthModule } from './features/auth/auth.module';
+import { AuthService } from './features/auth/auth.service';
+import { CampaignsController } from './features/campaigns/campaigns.controller';
+import { CampaignsModule } from './features/campaigns/campaigns.module';
+import { CampaignsService } from './features/campaigns/campaigns.service';
+import { CharactersModule } from './features/characters/characters.module';
+import { SessionsModule } from './features/sessions/sessions.module';
+import { UsersController } from './features/users/users.controller';
+import { UsersModule } from './features/users/users.module';
+import { UsersService } from './features/users/users.service';
 
 @Module({
   imports: [
     AuthModule,
-    CampanhaModule,
+    CampaignsModule,
 
     ConfigModule.forRoot({
       isGlobal: true,
@@ -43,12 +46,18 @@ import { CampanhaService } from './services/campanha.service';
         port: +configService.get('DB_PORT'),
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
+        database: configService.get('DB_DATABASE'),
         entities: [join(process.cwd(), 'dist/**/*.entity.ts')],
       })
-    })
+    }),
+    UsersModule,
+    CampaignsModule,
+    UsersModule,
+    CampaignsModule,
+    CharactersModule,
+    SessionsModule
   ],
-  controllers: [ UsuarioController, AuthController, CampanhaController ],
-  providers: [ AuthService, UsuarioService, CampanhaService, DbConnectionService ],
+  controllers: [ UsersController, AuthController, CampaignsController ],
+  providers: [ AuthService, UsersService, CampaignsService, DbConnectionService ],
 })
 export class AppModule { }
