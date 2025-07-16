@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,15 +15,16 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Ready Dice Roll!')
     .setDescription('APIs utilizadas no projeto Ready, Dice, Roll!')
-    .setVersion('1.0')
+    .setVersion('2.0')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Enter JWT token',
+        description: 'Informe o token JWT',
+        in: 'header'
       },
-      'access-token',
+      'access-token'
     )
     .build();
 
