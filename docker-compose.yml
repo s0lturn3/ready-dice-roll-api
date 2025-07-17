@@ -8,6 +8,7 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - DB_HOST=db
       - DATABASE_URL=postgres://admin:admin@db:5432/readydiceroll
     depends_on:
       - db
