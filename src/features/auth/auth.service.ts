@@ -24,23 +24,23 @@ export class AuthService {
   // #region Public Methods
 
   /** Valida se um usuário já está cadastrado no sistema ou não com base no Email/Username informado.
-   * 
-   * @param usernameOrEmail String com username ou email do usuário
+   * @param username Username informado para o usuário
+   * @param email E-mail informado para o usuário
    * @returns Estrutura simples que informa se é um novo usuário ou um já cadastrado
-   */
-  public async validateUsernameEmail(usernameOrEmail: string): Promise<{ newUser: boolean }> {
-    if (!usernameOrEmail) throw new BadRequestException("Informe um nome de usuário ou email.");
+  */
+  public async userExists(username: string, email: string): Promise<boolean> {
+    if (!username && !email) throw new BadRequestException("Informe pelo menos um nome de usuário ou email.");
 
     try {
       const user = await this.userRepository.findOne({
         where: [
-          { Email: usernameOrEmail },
-          { Username: usernameOrEmail }
+          { Email: email },
+          { Username: username }
         ],
       });
   
-      if (!user) return { newUser: true };
-      return { newUser: false };
+      if (!user) return false;
+      return true;
     }
     catch (error) {
       throw new InternalServerErrorException("Ocorreu um erro ao validar o usuário/email: " + error.message);
@@ -92,33 +92,13 @@ export class AuthService {
   }
   // #endregion Public Methods
 
-
   // #region Private Methods
   // [...]
   // #endregion Private Methods
 
 
-  // #region Logic
+  // #region Utils
   // [...]
-  // #endregion Logic
+  // #endregion Utils
 
-
-  // #region Database Operations
-  // [...]
-  // #endregion Database Operations
-
-
-  // #region Validation & Error Handling
-  // [...]
-  // #endregion Validation & Error Handling
-
-
-  // #region External Services Integration
-  // [...]
-  // #endregion External Services Integration
-
-
-  // #region Utility Methods
-  // [...]
-  // #endregion Utility Methods
 }

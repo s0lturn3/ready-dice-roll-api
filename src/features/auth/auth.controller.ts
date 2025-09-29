@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { AuthGuard } from 'src/shared/guards/auth.guard';
@@ -57,12 +57,18 @@ export class AuthController {
   @ApiOperation({ summary: 'Cria um usuário novo.' })
   @ApiResponse({ status: 201, description: 'Usuário criado.' })
   @ApiResponse({ status: 400, description: 'Ocorreu um erro com a requisição. Verifique os parâmetros.' })
-  @ApiResponse({ status: 500, description: 'Ocorreu um erro de conexão ao criar o usuário.' })
+  @ApiResponse({ status: 500, description: 'Ocorreu um erro ao criar o usuário.' })
   @Post('signIn')
   public async signIn(@Body() createUserDto: CreateUserDto): Promise<{ access_token: string, userId: string, userName: string }> {
-    const { access_token, userId, userName } = await this._usersService.create(createUserDto);
+    const userExists: boolean = await this._authService.userExists(createUserDto.Username, createUserDto.Email);
 
-    return { access_token, userId, userName };
+    if (userExists) {
+      throw new InternalServerErrorException("Este username/e-mail já foi utilizado, utilize outros.");
+    }
+    else {
+      const { access_token, userId, userName } = await this._usersService.create(createUserDto);
+      return { access_token, userId, userName };
+    }
   }
   // #endregion POST
 
