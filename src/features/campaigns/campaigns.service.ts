@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { Campaign } from './entities/campaign.entity';
 
 @Injectable()
@@ -26,7 +27,12 @@ export class CampaignsService {
     let response: Campaign[];
 
     try {
-      response = await this.campaignRepository.find();
+      response = await this.campaignRepository.find({
+        order: {
+          Nome: 'ASC', // Sort by 'Nome' column in ascending order
+          DtCriacao: 'DESC',      // Then by 'DtCriacao' column in descending order
+        }
+      });
       return response;
     }
     catch (error) {
@@ -38,6 +44,15 @@ export class CampaignsService {
     try {
       const campaign = this.campaignRepository.create(createCampaignDto);
       return await this.campaignRepository.save(campaign);
+    }
+    catch (error) {
+      throw new InternalServerErrorException(`Ocorreu um erro interno ao criar uma Campanha.: ${error}`);
+    }
+  }
+
+  public async update(Id: number, updateCampaignDto: UpdateCampaignDto): Promise<UpdateResult> {
+    try {
+      return await this.campaignRepository.update(Id, updateCampaignDto);
     }
     catch (error) {
       throw new InternalServerErrorException(`Ocorreu um erro interno ao criar uma Campanha.: ${error}`);

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { CampaignsService } from './campaigns.service';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
+import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { Campaign } from './entities/campaign.entity';
 
 @ApiBearerAuth('access-token')
@@ -51,6 +52,7 @@ export class CampaignsController {
   // #region POST
   
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Cria uma nova campanha.' })
   @Post()
   public async create(@Body() createCampaignDto: CreateCampaignDto): Promise<Campaign> {
     return await this._campaignsService.create(createCampaignDto);
@@ -64,10 +66,12 @@ export class CampaignsController {
   // #endregion POST
 
   // #region PATCH
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateCampaignDto: UpdateCampaignDto) {
-  //   return this._campaignsService.update(+id, updateCampaignDto);
-  // }
+  @Patch(':id')
+  public async update(@Param('id') id: number, @Body() updateCampaignDto: UpdateCampaignDto): Promise<any> {
+    return await this._campaignsService.update(id, updateCampaignDto);
+  }
+
+  
   // #endregion PATCH
 
   // #region DELETE
