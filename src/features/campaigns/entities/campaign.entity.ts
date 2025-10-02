@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsInt, IsOptional, IsString } from "class-validator";
 import { User } from "src/features/users/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'Campanha' })
 export class Campaign {
@@ -28,17 +28,19 @@ export class Campaign {
   CriadoPor: string;
 
   @Column('date')
+  @CreateDateColumn()
   @ApiProperty()
   @IsDate()
   DtCriacao: Date;
 
   @Column({ type: 'date', nullable: true })
+  @UpdateDateColumn({ nullable: true })
   @ApiProperty()
   @IsOptional()
   @IsDate()
   DtUltAtualizacao?: Date;
 
-  @Column('int')
+  @Column({ type: 'int', default: 1 })
   @ApiProperty()
   @IsInt()
   Status: number;

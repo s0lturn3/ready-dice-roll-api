@@ -1,24 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsOptional } from 'class-validator';
 import { CreateCampaignDto } from './create-campaign.dto';
 
 export class UpdateCampaignDto extends PartialType(CreateCampaignDto) {
   
   @ApiProperty()
-  Nome: string;
-  
-  @ApiProperty()
-  Descricao?: string;
-  
-  @ApiProperty()
-  CriadoPor: string;
-  
-  @ApiProperty()
+  @IsDate()
+  @IsOptional()
   DtUltAtualizacao?: Date;
   
-  @ApiProperty()
-  Status: number;
-  
-  @ApiProperty()
-  SistemaId?: number;
 }

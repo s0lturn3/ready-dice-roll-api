@@ -31,7 +31,7 @@ async function bootstrap() {
   app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
       res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS, DELETE');
       res.header('Access-Control-Allow-Headers', 'Accept, Content-Type, Authorization');
       res.sendStatus(204); // No Content
     } else {
