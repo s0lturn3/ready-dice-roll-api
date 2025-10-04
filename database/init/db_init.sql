@@ -275,3 +275,43 @@ CREATE TABLE "RegistroRelacionado" (
 
 -- 7. Índices
 CREATE INDEX "idx_habilidade_tipo" ON "Habilidade" ("Tipo" ASC);
+
+
+-- 8. Inicialização de valores
+-- Usuário de demonstração
+INSERT INTO "Usuario" (
+  "Id", "Username", "Email", "Senha", "DtCriacao", "DtUltimoLogin"
+) VALUES (
+  '11111111-1111-1111-1111-111111111111', -- UUID fixo
+  'demo',
+  'demo@email.com',
+  'demo', -- trocar pelo hash real
+  CURRENT_DATE,
+  NULL
+);
+
+-- Campanha vinculada ao usuário demo
+INSERT INTO "Campanha" (
+  "Nome", "Descricao", "CriadoPor", "DtCriacao", "DtUltAtualizacao", "Status", "SistemaId"
+) VALUES (
+  'Demonstração',
+  'Campanha de demonstração do sistema',
+  '11111111-1111-1111-1111-111111111111',
+  CURRENT_DATE,
+  CURRENT_DATE,
+  1,     -- status ativo
+  NULL   -- sem sistema vinculado
+);
+
+-- Personagem de demonstração
+INSERT INTO "Personagem" (
+  "Nome", "Historia", "Nivel", "IsNpc", "CriadoPor", "ControladoPor", "CampanhaId"
+) VALUES (
+  'Herói',
+  'Personagem de demonstração para testes na árvore de habilidades.',
+  1,
+  0,  -- não é NPC
+  '11111111-1111-1111-1111-111111111111',
+  '11111111-1111-1111-1111-111111111111',
+  (SELECT "Id" FROM "Campanha" WHERE "CriadoPor" = '11111111-1111-1111-1111-111111111111' LIMIT 1)
+);

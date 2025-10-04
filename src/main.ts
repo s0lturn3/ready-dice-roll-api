@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -10,6 +11,9 @@ async function bootstrap() {
 
   // Aplica nosso interceptor para padronizar a estrutura de retorno
   app.useGlobalInterceptors(new ResponseInterceptor());
+
+  // Aplica validação global para caso parâmetros obrigatórios não sejam informados joga '400 - Bad Request'
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
   // Configuração do Swagger
   const config = new DocumentBuilder()
