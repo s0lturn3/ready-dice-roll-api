@@ -16,7 +16,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
 
     private readonly _jwtService: JwtService,
-    private readonly _usersService: UsersService
+    private readonly _usersService: UsersService,
   ) { }
   // #endregion Constructor & Dependencies
 
@@ -52,7 +52,7 @@ export class AuthService {
    * 
    * @param loginData Dados do login
    * @returns Estrutura com token de aceso, ID e nome do usuário
-   */
+  */
   public async login(loginData: IUserLogin): Promise<{ access_token: string, userId: string, userName: string }> {
     let responseModel = { access_token: "", userId: "", userName: "" };
     let payload: { sub: string, username: string } = null;
@@ -91,6 +91,7 @@ export class AuthService {
     return responseModel;
   }
   // #endregion Public Methods
+
 
   // #region Private Methods
   // [...]
