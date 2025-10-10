@@ -95,7 +95,7 @@ CREATE TABLE "Personagem" (
   "Nome" TEXT NOT NULL,
   "Historia" TEXT,
   "Nivel" INTEGER NOT NULL DEFAULT 0,
-  "IsNpc" INTEGER NOT NULL DEFAULT 0,
+  "IsNpc" BOOLEAN NOT NULL DEFAULT true,
   "CriadoPor" uuid NOT NULL,
   "ControladoPor" uuid NOT NULL,
   "CampanhaId" INTEGER,
@@ -127,17 +127,30 @@ CREATE TABLE "Habilidade" (
   "Tipo" INTEGER NOT NULL,
   "Icone" TEXT,
   "Nivel" INTEGER NOT NULL DEFAULT 0,
-  "HabilidadeDependenciaId" INTEGER,
   "DataCriacao" TEXT NOT NULL,
   "ExclusivaClasseId" INTEGER,
   "ExclusivaRacaId" INTEGER,
+  "CustoDesbloqueio" INTEGER NOT NULL DEFAULT 0,
+  "GraphId" TEXT,
   "posX" INTEGER,
   "posY" INTEGER,
   FOREIGN KEY ("CampanhaId") REFERENCES "Campanha" ("Id"),
-  FOREIGN KEY ("HabilidadeDependenciaId") REFERENCES "Habilidade" ("Id"),
   FOREIGN KEY ("Tipo") REFERENCES "TipoHabilidade" ("Id"),
   FOREIGN KEY ("ExclusivaClasseId") REFERENCES "Classe" ("Id"),
   FOREIGN KEY ("ExclusivaRacaId") REFERENCES "Raca" ("Id")
+);
+
+CREATE TABLE "HabilidadeDependencia" (
+  "Id" SERIAL PRIMARY KEY,
+  "EdgeId" TEXT,
+  "PrerequisitoId" INTEGER NOT NULL,
+  "DependenteId" INTEGER NOT NULL,
+  "TipoConexao" TEXT NOT NULL,
+
+  UNIQUE ("PrerequisitoId", "DependenteId"),
+
+  FOREIGN KEY ("PrerequisitoId") REFERENCES "Habilidade" ("Id"),
+  FOREIGN KEY ("DependenteId") REFERENCES "Habilidade" ("Id")
 );
 
 CREATE TABLE "Quest" (
@@ -205,7 +218,7 @@ CREATE TABLE "HabilidadePersonagem" (
   "Id" SERIAL PRIMARY KEY,
   "PersonagemId" INTEGER NOT NULL,
   "HabilidadeId" INTEGER NOT NULL,
-  "IsDesbloqueada" INTEGER DEFAULT 0,
+  "IsDesbloqueada" BOOLEAN DEFAULT false,
   "DtDesbloqueio" DATE,
   FOREIGN KEY ("HabilidadeId") REFERENCES "Habilidade" ("Id"),
   FOREIGN KEY ("PersonagemId") REFERENCES "Personagem" ("Id")
@@ -276,6 +289,12 @@ CREATE TABLE "RegistroRelacionado" (
 -- 7. Índices
 CREATE INDEX "idx_habilidade_tipo" ON "Habilidade" ("Tipo" ASC);
 
+-- For finding all prerequisites of a skill (most common query for unlock logic)
+CREATE INDEX "idx_dependenteid" ON "HabilidadeDependencia" ("DependenteId");
+
+-- For finding all skills unlocked by a skill (for visualization traversal)
+CREATE INDEX "idx_prerequisitoid" ON "HabilidadeDependencia" ("PrerequisitoId");
+
 
 -- 8. Inicialização de valores
 -- Usuário de demonstração
@@ -307,10 +326,10 @@ INSERT INTO "Campanha" (
 INSERT INTO "Personagem" (
   "Nome", "Historia", "Nivel", "IsNpc", "CriadoPor", "ControladoPor", "CampanhaId"
 ) VALUES (
-  'Herói',
+  'Demo',
   'Personagem de demonstração para testes na árvore de habilidades.',
   1,
-  0,  -- não é NPC
+  true,  -- É um NPC
   '11111111-1111-1111-1111-111111111111',
   '11111111-1111-1111-1111-111111111111',
   (SELECT "Id" FROM "Campanha" WHERE "CriadoPor" = '11111111-1111-1111-1111-111111111111' LIMIT 1)

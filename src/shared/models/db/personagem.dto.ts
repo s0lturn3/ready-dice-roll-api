@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsString, IsOptional } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString } from "class-validator";
 
 export class PersonagemDto {
     @ApiProperty()
@@ -20,8 +20,8 @@ export class PersonagemDto {
     Nivel: number;
 
     @ApiProperty()
-    @IsInt()
-    IsNpc: number;
+    @IsBoolean()
+    IsNpc: boolean;
 
     @ApiProperty()
     @IsString()

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsString, IsOptional, IsDate } from "class-validator";
+import { IsDate, IsInt, IsOptional, IsString } from "class-validator";
 
 export class HabilidadeDto {
     @ApiProperty()
@@ -36,11 +36,6 @@ export class HabilidadeDto {
     Nivel: number;
 
     @ApiProperty()
-    @IsOptional()
-    @IsInt()
-    HabilidadeDependenciaId?: number;
-
-    @ApiProperty()
     @IsDate()
     DataCriacao: string;
 
@@ -53,6 +48,15 @@ export class HabilidadeDto {
     @IsOptional()
     @IsInt()
     ExclusivaRacaId?: number;
+
+    @ApiProperty()
+    @IsInt()
+    CustoDesbloqueio: number;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    GraphId: string;
 
     @ApiProperty()
     @IsOptional()

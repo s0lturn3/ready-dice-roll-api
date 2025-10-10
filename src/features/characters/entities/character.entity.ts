@@ -25,7 +25,7 @@ export class Character {
   @IsInt()
   Nivel: number;
 
-  @Column({ type: 'int', default: 1 })
+  @Column({ type: 'bool', default: false })
   @ApiProperty()
   IsNpc: boolean;
 
